@@ -1,0 +1,8 @@
+to run the the code on windows make sure you have wsl enabled on windows, and on vs code enable wsl extention
+open terminal and do sudo apt intall gcc 
+then run this command
+g++ -std=c++11 -g3 -Wall python_corr.cpp
+after that run the command
+./a.out
+
+you should now see the results in a txt file labeled correct.txt
