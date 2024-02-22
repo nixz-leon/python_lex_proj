@@ -29,6 +29,16 @@ inline string condition_line(string input){
     input = tochar(indent_count) + input.substr(space_count,input.length());
     return input;
 }
+
+inline string uncondition_line(string input){
+    string temp = "";
+    for(int i =0; i<toint(input[0]); i++){
+        temp += "    ";
+    }
+    input = temp + input.substr(1,input.size());
+    return input;
+}
+
 inline string check_keyword(string input){
     input = input.substr(1,input.size());
     string keyword = "";
@@ -61,22 +71,49 @@ int main(){
         }
     }
 
-    
+
     int indentation=0;
     int loop_count = 0;
-    int loop_statments =0;
+    int curr_indent =0;
+    int min_statement = 0;
     for(int i=0; i < (int)lines.size(); i++){
-        if(lines[i][lines[i].size()-1] == ':'){
+        if(lines[i][lines[i].size()-2] == ':'){
             indentation++;
             loop_count++;
-        }else if (toint(lines[i][0]) < indentation-loop_count){
-            indentation -= loop_count;
+            min_statement = 1;
+        }else{
+            //For logic diagram, refer to pdf posted in the discord
+            curr_indent = toint(lines[i][0]);
+            if(curr_indent!=indentation){
+                if(min_statement == 0){//here i have min_statement = 0, which in this case is the inverse of min_statment = 1;
+                    if(curr_indent <= indentation-loop_count){
+                        indentation -= loop_count;
+                        curr_indent = indentation;
+                        loop_count = 0;
+                    }else if(curr_indent < indentation){
+                        loop_count -= indentation-curr_indent;
+                        indentation = curr_indent;
+
+                    }else{
+                        curr_indent = indentation;
+                    }
+                }else{
+                    curr_indent = indentation;
+                    min_statement = 0;
+                }
+            }else{
+                min_statement = 0;
+            }
+            lines[i][0]= tochar(curr_indent);
         }
-        
-        //There we could check for keywords
-        //right now simple approach where we only decrease indentation given the current lines is at indentation level =< n-loop_count && loop statements left = 0;
-        //this is results in no further addition to the loop body
     }
+    outfile << " " << endl;
+    outfile << " " << endl;
+    outfile << " " << endl;
+    for(int i=0; i < (int)lines.size(); i++){
+        outfile << uncondition_line(lines[i]) << endl;
+    }
+    
 }
 
 
