@@ -78,10 +78,12 @@ int main(){
     int min_statement = 0;
     for(int i=0; i < (int)lines.size(); i++){
         if(lines[i][lines[i].size()-2] == ':'){
+            //need to add indentation check here
             indentation++;
             loop_count++;
             min_statement = 1;
-        }else{
+            //here just need to check for char d at position 1; if so call the correct function function
+        }
             //For logic diagram, refer to pdf posted in the discord
             curr_indent = toint(lines[i][0]);
             if(curr_indent!=indentation){
@@ -105,11 +107,14 @@ int main(){
                 min_statement = 0;
             }
             lines[i][0]= tochar(curr_indent);
-        }
     }
+
+
+    outfile << " " << endl;//adding seperation between the two files
     outfile << " " << endl;
     outfile << " " << endl;
-    outfile << " " << endl;
+
+
     for(int i=0; i < (int)lines.size(); i++){
         outfile << uncondition_line(lines[i]) << endl;
     }
