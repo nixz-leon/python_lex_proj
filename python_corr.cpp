@@ -30,6 +30,13 @@ inline string condition_line(string input){
     return input;
 }
 
+inline bool check_print(string input){
+    if(input.substr(1,6) == "print(" && (input[input.size()-2] == ')' || input.back() == ')')){
+        return true;
+    }
+    return false;
+}
+
 inline string uncondition_line(string input){
     string temp = "";
     for(int i =0; i<toint(input[0]); i++){
@@ -61,13 +68,14 @@ int main(){
     file.open(filename);
     ofstream outfile;
     outfile.open(outfilename);
+    int print_count = 0;
 
 
     string line ="";
     while(getline(file,line)){   
         if(line != ""){
             outfile << line << endl;
-            lines.push_back(condition_line(line));     
+            lines.push_back(condition_line(line));   
         }
     }
 
@@ -76,26 +84,48 @@ int main(){
     int loop_count = 0;
     int curr_indent =0;
     int min_statement = 0;
+
     for(int i=0; i < (int)lines.size(); i++){
+        cout << lines[i] << endl;
+    }
+
+    for(int i=0; i < (int)lines.size(); i++){
+        print_count += (int)check_print(lines[i]);  
         if(lines[i][lines[i].size()-2] == ':'){
             //need to add indentation check here
+            if(toint(lines[i][0]) != indentation){
+                lines[i][0] = tochar(indentation);
+            }
             indentation++;
             loop_count++;
             min_statement = 1;
             //here just need to check for char d at position 1; if so call the correct function function
-        }
+            
+        }else{
             //For logic diagram, refer to pdf posted in the discord
             curr_indent = toint(lines[i][0]);
             if(curr_indent!=indentation){
                 if(min_statement == 0){//here i have min_statement = 0, which in this case is the inverse of min_statment = 1;
                     if(curr_indent <= indentation-loop_count){
-                        indentation -= loop_count;
-                        curr_indent = indentation;
-                        loop_count = 0;
+                        if(lines[i-1][0] == lines[i+1][0]){
+                            cout << lines[i+1] << endl;
+                            cout << indentation << endl;
+                            curr_indent = indentation;
+                        }else{
+                            indentation -= loop_count;
+                            curr_indent = indentation;
+                            loop_count = 0;
+                        }
+                        
                     }else if(curr_indent < indentation){
-                        loop_count -= indentation-curr_indent;
-                        indentation = curr_indent;
-
+                        if(lines[i-1][0] == lines[i+1][0]){
+                            cout << lines[i+1] << endl;
+                            cout << indentation << endl;
+                            curr_indent = indentation;
+                        }else{
+                            loop_count -= indentation-curr_indent;
+                            indentation = curr_indent;
+                        }
                     }else{
                         curr_indent = indentation;
                     }
@@ -106,18 +136,19 @@ int main(){
             }else{
                 min_statement = 0;
             }
+            cout << indentation << endl;
             lines[i][0]= tochar(curr_indent);
+        }
     }
-
 
     outfile << " " << endl;//adding seperation between the two files
     outfile << " " << endl;
     outfile << " " << endl;
-
-
     for(int i=0; i < (int)lines.size(); i++){
         outfile << uncondition_line(lines[i]) << endl;
     }
+    outfile << endl << endl << endl;
+    outfile << print_count << endl;
     
 }
 
