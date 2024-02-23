@@ -30,6 +30,7 @@ inline string condition_line(string input){
     return input;
 }
 
+
 inline bool check_print(string input){
     if(input.substr(1,6) == "print(" && (input[input.size()-2] == ')' || input.back() == ')')){
         return true;
