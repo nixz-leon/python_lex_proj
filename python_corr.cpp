@@ -34,7 +34,6 @@ inline string condition_line(string input){
     return input;
 }
 
-
 inline bool check_print(string input){
     if(input.substr(1,6) == "print(" && input.back() == ')'){return true;}
     return false;
@@ -89,7 +88,6 @@ int main(){
         else if ((e2==e3) & (e2 == ':')){n2 = n1; n3 = n2+1;}
         else if (e2 == ':'){if(n1!=n3){n3=n1;}}
         else{
-            cout << "con 4" << endl;
             if(n1==n3){n2=n3;}
             else if((n1==n2) & (n2>n3)){loop_count = n2-n3;}
             else if((n1==n2) & (n2<n3)){n3=n2;}
@@ -99,7 +97,6 @@ int main(){
         lines[i][0] = tochar(n1);
         lines[i+1][0] = tochar(n2);
         lines[i+2][0] = tochar(n3);
-        cout << endl << endl;
     }
 
 
