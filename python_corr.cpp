@@ -50,7 +50,10 @@ inline string uncondition_line(string input){
 
 int main(){
     vector<string> lines;
-    string filename = "test.py";
+    string filename;
+    cout << "enter file name: ";
+    cin >> filename;
+    cout << endl;
     string outfilename = "correct.txt";
     fstream file;
     file.open(filename);
@@ -73,6 +76,8 @@ int main(){
     int n1;int n2 = toint(lines[0][0]);int n3 = toint(lines[1][0]);
     char e1; char e2= lines[0][lines[0].size()-1];char e3= lines[1][lines[1].size()-1];
 
+  
+
 
     for(int i =0; i < (int)lines.size()-2; i++){
         n1 = n2; n2 = n3; // indent count, n1, n2, n3, since we iterate only line line at a time, 
@@ -84,15 +89,19 @@ int main(){
             if((n1+1)!=n2){n2 = n1+1;}
             if(n2<n3){n3=n2;};
         }
-        else if((e2==e1) & (e1 == ':')){n2 = n1+1;n3 = n2+1;}
-        else if ((e2==e3) & (e2 == ':')){n2 = n1; n3 = n2+1;}
-        else if (e2 == ':'){if(n1!=n3){n3=n1;}}
+        else if((e2==e1) && (e1 == ':')){n2 = n1+1;n3 = n2+1;}
+        else if ((e2==e3) && (e2 == ':')){n2 = n1; n3 = n2+1;}
+        else if (e2 == ':'){
+            if((n1>n2) & (n1 == n3)){n2 = n1-1;}
+            else if(n1 == n2){n3 = n2+1;}
+            else if(n1<n2){n2 = n1; n3 = n1+1;}
+        }
         else{
             if(n1==n3){n2=n3;}
-            else if((n1==n2) & (n2>n3)){loop_count = n2-n3;}
-            else if((n1==n2) & (n2<n3)){n3=n2;}
-            else if((n2==n3) & (n1>n2)){loop_count=n2;}
-            else if((n2==n3) & (n1<n2)){n2=n1;n3=n1;}
+            else if((n1==n2) && (n2>n3)){loop_count = n2-n3;}
+            else if((n1==n2) && (n2<n3)){n3=n2;}
+            else if((n2==n3) && (n1>n2)){loop_count=n2;}
+            else if((n2==n3) && (n1<n2)){n2=n1;n3=n1;}
         }
         lines[i][0] = tochar(n1);
         lines[i+1][0] = tochar(n2);
