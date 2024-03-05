@@ -4,15 +4,14 @@
 #include <vector>
 using namespace std;
 
-string keywords[7] = {"if","else","elif","for","while","return","def"};
-
 inline int toint(char in){
     return in-'0';
 }
 inline char tochar(int in){
     return in+'0';
 }
-
+//need to add condtional for comments
+//or generally need to think about how i will be handleing comments
 inline string condition_line(string input){
     int space_count=0;
     int indent_count = 0;
@@ -31,7 +30,51 @@ inline string condition_line(string input){
     while(isspace(input.back())){//removing white spaces from each string
         input.erase(input.size()-1);
     }
+    if(input[1] == '#'){input = input + ' ';}
     return input;
+}
+
+inline string correct_header(string func_header) {
+    if(func_header.substr(1,4) != "def "){//quick exit, not a function, so no nead to correct
+        return func_header;
+    }
+    int start_index = 0;
+    for(int i = 5; i < func_header.size()-1; i++){
+        if(func_header[i] == ' '){
+            func_header[i] = '(';//replaces the erronous space with a opening bracket 
+        }
+        if(func_header[i] == '('){
+            start_index = i;
+            break;
+        }
+    }
+    string temp = func_header.substr(start_index,func_header.size()-1);
+    bool prev_com = false;
+    bool start;
+    for(int i=start_index; i < (int)func_header.size()-1;i++){
+        if(!isalpha(func_header[i])&& (start)){
+            if(func_header[i] == ' ' && !prev_com){
+                func_header[i] = ',';
+                prev_com = true;
+            }else if (func_header[i] == ','){
+                if(prev_com){
+                prev_com = false;
+                func_header[i] = ' '; 
+                }
+            }
+        }else if(isalpha(func_header[i])){
+            prev_com = false;
+            start = true;
+        }
+    }
+    if(func_header.back() != ':'){
+        if(func_header.back() == ')'){
+            func_header = func_header + ':';
+        }else{
+            func_header = func_header + "):";
+        }
+    }
+    return func_header;
 }
 
 inline bool check_print(string input){
@@ -58,6 +101,8 @@ int main(){
     fstream file;
     file.open(filename);
     ofstream outfile;
+    ofstream debug;
+    debug.open("debug.txt");
     outfile.open(outfilename);
     int print_count = 0;
 
@@ -67,7 +112,7 @@ int main(){
     while(getline(file,line)){   
         if(line != ""){
             outfile << line << endl;
-            lines.push_back(condition_line(line));
+            lines.push_back(correct_header(condition_line(line)));
             print_count += (int)check_print(lines[g]);   
             g++;
         }
@@ -76,23 +121,27 @@ int main(){
     int n1;int n2 = toint(lines[0][0]);int n3 = toint(lines[1][0]);
     char e1; char e2= lines[0][lines[0].size()-1];char e3= lines[1][lines[1].size()-1];
 
-  
-
-
     for(int i =0; i < (int)lines.size()-2; i++){
         n1 = n2; n2 = n3; // indent count, n1, n2, n3, since we iterate only line line at a time, 
         n3 = toint(lines[i+2][0]);
         e1 = e2; e2 = e3; // these are ending char, makes the rest of the code more readable
         e3 = lines[i+2].back();
+        debug << "Starting line " << i+1 << " Loop cout: " << loop_count << endl;
+        debug << "Indet, N1: " << n1 << " N2: " << n2 << " N3: " << n3 << endl;
+        debug << "Endings, E1: " << e1 << " E2: " << e2 << " E3: " << e3 << endl; 
+        debug << endl << "Conditions hit"  << endl;
         if(e1 == ':'){
-            loop_count++;
-            if((n1+1)!=n2){n2 = n1+1;}
-            if(n2<n3){n3=n2;};
+            //loop_count++;
+            debug << "Con 1" << endl;
+            if((n1+1)!=n2){n2 = n1+1;debug << "Sub Con 1" << endl;}
+            if(n2<n3){n3=n2;debug << "Sub Con 2" << endl;};
         }
         else if((e2==e1) && (e1 == ':')){n2 = n1+1;n3 = n2+1;}
         else if ((e2==e3) && (e2 == ':')){n2 = n1; n3 = n2+1;}
         else if (e2 == ':'){
-            if((n1>n2) & (n1 == n3)){n2 = n1-1;}
+            debug << "Con 4" << endl;
+            if((n1>n2)){n2 = n1-1;}
+            else if(n1>n2){n3 = n2+1; loop_count--;}
             else if(n1 == n2){n3 = n2+1;}
             else if(n1<n2){n2 = n1; n3 = n1+1;}
         }
@@ -106,6 +155,7 @@ int main(){
         lines[i][0] = tochar(n1);
         lines[i+1][0] = tochar(n2);
         lines[i+2][0] = tochar(n3);
+        debug << endl << endl;
     }
 
 
@@ -118,7 +168,8 @@ int main(){
     }
     outfile << endl << endl << endl;
     outfile << print_count << endl;
-    
+    file.close();
+    outfile.close();
     
 }
 
