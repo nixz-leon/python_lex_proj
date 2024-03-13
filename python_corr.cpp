@@ -50,7 +50,7 @@ inline string correct_header(string func_header) {
     }
     string temp = func_header.substr(start_index,func_header.size()-1);
     bool prev_com = false;
-    bool start;
+    bool start = true;
     for(int i=start_index; i < (int)func_header.size()-1;i++){
         if(!isalpha(func_header[i])&& (start)){
             if(func_header[i] == ' ' && !prev_com){
@@ -60,7 +60,7 @@ inline string correct_header(string func_header) {
                 if(prev_com){
                 prev_com = false;
                 func_header[i] = ' '; 
-                }
+                }else{prev_com=true;}
             }
         }else if(isalpha(func_header[i])){
             prev_com = false;
