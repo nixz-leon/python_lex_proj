@@ -39,7 +39,7 @@ inline string correct_header(string func_header) {
         return func_header;
     }
     int start_index = 0;
-    for(int i = 5; i < func_header.size()-1; i++){
+    for(int i = 5; i < (int)func_header.size()-1; i++){
         if(func_header[i] == ' '){
             func_header[i] = '(';//replaces the erronous space with a opening bracket 
         }
@@ -101,8 +101,6 @@ int main(){
     fstream file;
     file.open(filename);
     ofstream outfile;
-    ofstream debug;
-    debug.open("debug.txt");
     outfile.open(outfilename);
     int print_count = 0;
 
@@ -126,20 +124,14 @@ int main(){
         n3 = toint(lines[i+2][0]);
         e1 = e2; e2 = e3; // these are ending char, makes the rest of the code more readable
         e3 = lines[i+2].back();
-        debug << "Starting line " << i+1 << " Loop cout: " << loop_count << endl;
-        debug << "Indet, N1: " << n1 << " N2: " << n2 << " N3: " << n3 << endl;
-        debug << "Endings, E1: " << e1 << " E2: " << e2 << " E3: " << e3 << endl; 
-        debug << endl << "Conditions hit"  << endl;
         if(e1 == ':'){
             //loop_count++;
-            debug << "Con 1" << endl;
-            if((n1+1)!=n2){n2 = n1+1;debug << "Sub Con 1" << endl;}
-            if(n2<n3){n3=n2;debug << "Sub Con 2" << endl;};
+            if((n1+1)!=n2){n2 = n1+1;}
+            if(n2<n3){n3=n2;};
         }
         else if((e2==e1) && (e1 == ':')){n2 = n1+1;n3 = n2+1;}
         else if ((e2==e3) && (e2 == ':')){n2 = n1; n3 = n2+1;}
         else if (e2 == ':'){
-            debug << "Con 4" << endl;
             if((n1>n2)){n2 = n1-1;}
             else if(n1>n2){n3 = n2+1; loop_count--;}
             else if(n1 == n2){n3 = n2+1;}
@@ -155,7 +147,6 @@ int main(){
         lines[i][0] = tochar(n1);
         lines[i+1][0] = tochar(n2);
         lines[i+2][0] = tochar(n3);
-        debug << endl << endl;
     }
 
 
